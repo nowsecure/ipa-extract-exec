@@ -1,0 +1,37 @@
+{
+  "name": "ipa-extract-exec",
+  "version": "0.0.1",
+  "description": "Extract the executable from an IPA",
+  "bin": {
+    "ipa-extract-exec": "./bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nowsecure/ipa-extract-exec.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "fatmacho": "^0.1.1",
+    "ipa-extract-info": "^1.2.0",
+    "macho": "^0.4.0",
+    "tmp": "0.0.28",
+    "yauzl": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "bugs": {
+    "url": "https://github.com/nowsecure/ipa-extract-exec/issues"
+  },
+  "homepage": "https://github.com/nowsecure/ipa-extract-exec#readme",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "ipa",
+    "executable",
+    "extract",
+    "encrypted"
+  ],
+  "author": "dweinstein"
+}
