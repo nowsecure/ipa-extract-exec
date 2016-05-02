@@ -12,5 +12,5 @@ const fd = fs.openSync(process.argv[2], 'r')
 
 extractExec(fd, (err, path, fd, name, plist, encrypted, cleanupCb) => {
   if (err) { throw err }
-  console.log(`${name} is ${encrypted ? '' : 'not'} encrypted`)
+  console.log(`${name} is ${encrypted ? 'encrypted' : 'not encrypted'}`)
 })
