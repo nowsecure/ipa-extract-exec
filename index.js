@@ -1,52 +1,45 @@
 'use strict'
-const extract = require('ipa-extract-info')
-const join = require('path').join
-const fromFd = require('yauzl').fromFd
 const basename = require('path').basename
-const tmp = require('tmp')
-const isEncryptedSync = require('./is-encrypted-sync')
 const createWriteStream = require('fs').createWriteStream
+const extractPlists = require('ipa-extract-info')
+const fromFd = require('yauzl').fromFd
+const once = require('once')
+const tmp = require('tmp')
 
-function isOurExec (entry, name) {
-  const filename = entry.fileName
-  return filename.indexOf('.app/') && basename(filename) === name
-}
+const isAppPath = (fileName) => fileName.indexOf('.app/') > 0
+const isBundleExec = (entry, name) => basename(entry.fileName) === name
+const isOurExec = (entry, name) => isAppPath(entry.fileName) && isBundleExec(entry, name)
 
-function getExecStream (fd, name, cb) {
+function getExecStream (fd, execname, cb) {
+  cb = once(cb)
   fromFd(fd, (err, zip) => {
     if (err) return cb(err)
     zip.on('entry', (entry) => {
-      if (!isOurExec(entry, name)) { return }
+      if (!isOurExec(entry, execname)) { return }
       zip.openReadStream(entry, (err, stream) => {
         if (err) { return cb(err) }
-        return cb(null, stream)
+        return cb(null, entry, stream)
       })
     })
   })
 }
 
 function extractExec (fd, cb) {
-  extract(fd, (err, res) => {
+  cb = once(cb)
+  extractPlists(fd, (err, plists) => {
     if (err) { throw err }
 
-    const plist = res[0]
-    const name = plist.CFBundleExecutable
-    getExecStream(fd, name, function (err, stream) {
+    // TODO: what if we get multiple plists?
+    const plist = plists[0]
+    getExecStream(fd, plist.CFBundleExecutable, (err, entry, exec) => {
       if (err) { return cb(err) }
-      tmp.file((err, path, fd, cleanup) => {
+      tmp.file((err, tmpPath, fd, cleanup) => {
         if (err) { return cb(err) }
 
-        stream.pipe(createWriteStream(null, { fd: fd }))
-        stream
-          .on('end', () => {
-            try {
-              return cb(null, path, fd, name, plist, isEncryptedSync(path), cleanup)
-            } catch (e) {
-              return cb(e)
-            }
-          })
-          .on('error', (err) => {
-            return cb(err)
+        exec.pipe(createWriteStream(null, { fd: fd }))
+          .on('error', cb)
+          .on('close', () => {
+            return cb(null, tmpPath, plist.CFBundleExecutable, plist, entry.fileName, cleanup)
           })
       })
     })

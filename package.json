@@ -11,9 +11,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fatmacho": "^0.1.1",
     "ipa-extract-info": "^1.2.0",
-    "macho": "^0.4.0",
+    "macho-is-encrypted": "0.0.1",
     "tmp": "0.0.28",
     "yauzl": "^2.4.1"
   },
