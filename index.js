@@ -14,8 +14,15 @@ function getExecStream (fd, execname, cb) {
   cb = once(cb)
   fromFd(fd, (err, zip) => {
     if (err) return cb(err)
-    zip.on('entry', (entry) => {
+    let entries = 0
+    zip.on('entry', function onentry (entry) {
+      if (!cb.called && ++entries > zip.entryCount) {
+        return cb(new Error(`Failed to find executable stream for ${execname}`))
+      }
       if (!isOurExec(entry, execname)) { return }
+
+      // stop listening for other entries as we found the one we want...
+      zip.removeListener('entry', onentry)
       zip.openReadStream(entry, (err, stream) => {
         if (err) { return cb(err) }
         return cb(null, entry, stream)

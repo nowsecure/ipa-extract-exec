@@ -5,16 +5,22 @@
   "bin": {
     "ipa-extract-exec": "./bin.js"
   },
+  "files": [
+    "bin.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nowsecure/ipa-extract-exec.git"
   },
+  "engines": {
+    "node": ">8.0.0"
+  },
   "license": "MIT",
   "dependencies": {
-    "ipa-extract-info": "^1.2.1",
-    "macho-is-encrypted": "^0.1.1",
-    "tmp": "0.0.28",
-    "yauzl": "^2.4.2"
+    "ipa-extract-info": "^1.2.5",
+    "macho-is-encrypted": "^0.1.2",
+    "tmp": "0.0.33",
+    "yauzl": "^2.10.0"
   },
   "devDependencies": {},
   "scripts": {},
